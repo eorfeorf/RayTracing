@@ -1,3 +1,2 @@
 Reference
-- https://raytracing.github.io/
-- https://inzkyk.xyz/ray_tracing_in_one_weekend/
+- https://raytracing.github.io/books/RayTracingInOneWeekend.html

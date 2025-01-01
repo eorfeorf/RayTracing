@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <cstdlib>
 #include <random>
 #include <limits>
 #include <memory>
@@ -43,3 +42,5 @@ inline double clamp(double x, double min, double max) {
 #include "vec3.h"
 #include "color.h"
 #include "camera.h"
+#include "interval.h"
+#include "hittable.h"

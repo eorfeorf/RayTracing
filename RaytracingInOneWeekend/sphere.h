@@ -10,7 +10,7 @@ public:
     sphere(point3 cen, double r) : center(cen), radius(r) {}
 
     virtual bool hit(
-        const ray& r, double tmin, double tmax, hit_record& rec
+        const ray& r, interval ray_t, hit_record& rec
     ) const;
 
 public:
@@ -20,7 +20,7 @@ public:
 
 
 bool sphere::hit(
-    const ray& r, double t_min, double t_max, hit_record& rec
+    const ray& r, interval ray_t, hit_record& rec
 ) const {
     vec3 oc = r.origin() - center;
     auto a = r.direction().length_squared();
@@ -31,7 +31,7 @@ bool sphere::hit(
     if (discriminant > 0) {
         auto root = sqrt(discriminant);
         auto temp = (-half_b - root) / a;
-        if (temp < t_max && temp > t_min) {
+        if (temp < ray_t.max && temp > ray_t.min) {
             rec.t = temp;
             rec.p = r.at(rec.t);
             vec3 outward_normal = (rec.p - center) / radius;
@@ -39,7 +39,7 @@ bool sphere::hit(
             return true;
         }
         temp = (-half_b + root) / a;
-        if (temp < t_max && temp > t_min) {
+        if (temp < ray_t.max && temp > ray_t.min) {
             rec.t = temp;
             rec.p = r.at(rec.t);
             vec3 outward_normal = (rec.p - center) / radius;

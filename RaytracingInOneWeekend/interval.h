@@ -1,5 +1,4 @@
 #pragma once
-
 class interval {
 public:
     double min, max;

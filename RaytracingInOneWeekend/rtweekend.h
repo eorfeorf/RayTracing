@@ -1,46 +1,44 @@
 #pragma once
-
 #include <cmath>
-#include <random>
+#include <cstdlib>
+#include <iostream>
 #include <limits>
 #include <memory>
+#include <random>
 
 
-// using
-using std::shared_ptr;
+// C++ Std Usings
+
 using std::make_shared;
-using std::sqrt;
+using std::shared_ptr;
 
-// 定数
+// Constants
+
 const double infinity = std::numeric_limits<double>::infinity();
 const double pi = 3.1415926535897932385;
 
-// ユーティリティ関数
+// Utility Functions
+
 inline double degrees_to_radians(double degrees) {
-	return degrees * pi / 180;
+    return degrees * pi / 180.0;
 }
 
 inline double random_double() {
-	static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-	static std::mt19937 generator;
-	return distribution(generator);
+    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    static std::mt19937 generator;
+    return distribution(generator);
 }
 
 inline double random_double(double min, double max) {
-	// [min,max) の実数乱数を返す
-	return min + (max - min) * random_double();
+    // Returns a random real in [min,max).
+    return min + (max - min) * random_double();
 }
 
-inline double clamp(double x, double min, double max) {
-	if (x < min) return min;
-	if (x > max) return max;
-	return x;
-}
 
-// 共通ヘッダー
+
+// Common Headers
+
+#include "color.h"
+#include "interval.h"
 #include "ray.h"
 #include "vec3.h"
-#include "color.h"
-#include "camera.h"
-#include "interval.h"
-#include "hittable.h"

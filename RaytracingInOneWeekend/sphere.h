@@ -1,51 +1,41 @@
 #pragma once
 
 #include "hittable.h"
-#include "vec3.h"
-
+#include "rtweekend.h"
 
 class sphere : public hittable {
 public:
-    sphere() {}
-    sphere(point3 cen, double r) : center(cen), radius(r) {}
+    sphere(const point3& center, double radius) : center(center), radius(std::fmax(0, radius)) {}
 
-    virtual bool hit(
-        const ray& r, interval ray_t, hit_record& rec
-    ) const;
+    bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
+        vec3 oc = center - r.origin();
+        auto a = r.direction().length_squared();
+        auto h = dot(r.direction(), oc);
+        auto c = oc.length_squared() - radius * radius;
 
-public:
+        auto discriminant = h * h - a * c;
+        if (discriminant < 0)
+            return false;
+
+        auto sqrtd = std::sqrt(discriminant);
+
+        // Find the nearest root that lies in the acceptable range.
+        auto root = (h - sqrtd) / a;
+        if (!ray_t.surrounds(root)) {
+            root = (h + sqrtd) / a;
+            if (!ray_t.surrounds(root))
+                return false;
+        }
+
+        rec.t = root;
+        rec.p = r.at(rec.t);
+        vec3 outward_normal = (rec.p - center) / radius;
+        rec.set_face_normal(r, outward_normal);
+
+        return true;
+    }
+
+private:
     point3 center;
     double radius;
 };
-
-
-bool sphere::hit(
-    const ray& r, interval ray_t, hit_record& rec
-) const {
-    vec3 oc = r.origin() - center;
-    auto a = r.direction().length_squared();
-    auto half_b = dot(oc, r.direction());
-    auto c = oc.length_squared() - radius * radius;
-    auto discriminant = half_b * half_b - a * c;
-
-    if (discriminant > 0) {
-        auto root = sqrt(discriminant);
-        auto temp = (-half_b - root) / a;
-        if (temp < ray_t.max && temp > ray_t.min) {
-            rec.t = temp;
-            rec.p = r.at(rec.t);
-            vec3 outward_normal = (rec.p - center) / radius;
-            rec.set_face_normal(r, outward_normal);
-            return true;
-        }
-        temp = (-half_b + root) / a;
-        if (temp < ray_t.max && temp > ray_t.min) {
-            rec.t = temp;
-            rec.p = r.at(rec.t);
-            vec3 outward_normal = (rec.p - center) / radius;
-            rec.set_face_normal(r, outward_normal);
-            return true;
-        }
-    }
-    return false;
-}

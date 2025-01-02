@@ -1,29 +1,11 @@
 #pragma once
-
-#include "rtweekend.h"
+#include "hittable.h"
 
 class camera {
 public:
     double aspect_ratio = 1.0;  // Ratio of image width over height
     int    image_width = 100;  // Rendered image width in pixel count
     int    samples_per_pixel = 10;   // Count of random samples for each pixel
-
-    camera() {
-        auto aspect_ratio = 16.0 / 9.0;
-        auto viewport_height = 2.0;
-        auto viewport_width = aspect_ratio * viewport_height;
-        auto focal_length = 1.0;
-
-        origin = point3(0, 0, 0);
-        horizontal = vec3(viewport_width, 0.0, 0.0);
-        vertical = vec3(0.0, viewport_height, 0.0);
-        lower_left_corner =
-            origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);
-    }
-
-    ray get_ray(double u, double v) const {
-        return ray(origin, lower_left_corner + u * horizontal + v * vertical - origin);
-    }
 
     void render(const hittable& world) {
         initialize();
@@ -46,11 +28,6 @@ public:
     }
 
 private:
-    point3 origin;
-    point3 lower_left_corner;
-    vec3 horizontal;
-    vec3 vertical;
-
     int    image_height;   // Rendered image height
     double pixel_samples_scale;  // Color scale factor for a sum of pixel samples
     point3 center;         // Camera center
@@ -85,11 +62,6 @@ private:
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
     }
 
-    vec3 sample_square() const {
-        // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square.
-        return vec3(random_double() - 0.5, random_double() - 0.5, 0);
-    }
-
     ray get_ray(int i, int j) const {
         // Construct a camera ray originating from the origin and directed at randomly sampled
         // point around the pixel location i, j.
@@ -104,6 +76,12 @@ private:
 
         return ray(ray_origin, ray_direction);
     }
+
+    vec3 sample_square() const {
+        // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square.
+        return vec3(random_double() - 0.5, random_double() - 0.5, 0);
+    }
+
 
     color ray_color(const ray& r, const hittable& world) const {
         hit_record rec;
